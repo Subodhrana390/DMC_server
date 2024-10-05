@@ -12,7 +12,7 @@ router.get('/:id',controller.getEventById);
 router.put('/:id',verifyToken, upload.fields([{ name: 'flyer', maxCount: 1 }, { name: 'photos', maxCount: 12 }]),controller.updateEvent);
 router.delete('/:id',verifyToken, controller.deleteEvent);
 router.get('/featured-event', controller.getFeaturedEvent);
-router.patch('/:id/featured',verifyToken, controller.featuredUpdate);
+router.patch('/featured/:id',verifyToken, controller.featuredUpdate);
 router.patch('/:id/disable',verifyToken, controller.disableFeatured);
 
 export default router;

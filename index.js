@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import axios from "axios";
 dotenv.config();
 import cors from "cors";
 import bodyParser from "body-parser";
@@ -34,6 +35,16 @@ app.get("/health", (req, res) => {
   res.send("Health! Ok");
 });
 
+const keepAlive = () => {
+  setInterval(async () => {
+    try {
+      const res = await axios.get('https://dmc-server.onrender.com/health');
+      console.log(`Self-ping success: ${res.data}`);
+    } catch (error) {
+      console.error('Self-ping failed:', error.message);
+    }
+  }, 13 * 60 * 1000);
+};
 
 mongoose
   .connect(process.env.MONGO_URI, {
@@ -43,6 +54,7 @@ mongoose
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
+    keepAlive();
   })
   .catch((error) => {
     console.error("Database connection error:", error);

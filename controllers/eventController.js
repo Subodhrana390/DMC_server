@@ -116,7 +116,9 @@ const getEvents = async (req, res) => {
   const query = {};
   if (req.query.featured) query.featured = req.query.featured;
   try {
-    const events = await Event.find(query).sort({ _id: -1 }).populate("creator");
+    const events = await Event.find(query)
+      .sort({ _id: -1 })
+      .populate("creator");
     res.status(200).json(events);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -175,11 +177,11 @@ const updateEvent = async (req, res) => {
     }
 
     if (req.files?.flyer) {
-      await cloudinary.uploader.destroy(event.flyer.public_id);
       const flyerUpload = await cloudinary.uploader.upload(
         req.files.flyer[0].path,
         { folder: "flyers" }
       );
+      await cloudinary.uploader.destroy(event.flyer.public_id);
       event.flyer = flyerUpload; // Updated flyer information
     }
 

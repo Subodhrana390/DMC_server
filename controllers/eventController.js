@@ -175,6 +175,7 @@ const updateEvent = async (req, res) => {
     }
 
     if (req.files?.flyer) {
+      await cloudinary.uploader.destroy(event.flyer.public_id);
       const flyerUpload = await cloudinary.uploader.upload(
         req.files.flyer[0].path,
         { folder: "flyers" }
@@ -219,7 +220,6 @@ const updateEvent = async (req, res) => {
 
       await Promise.all(
         publicIdsToDelete.map(async (publicId) => {
-          console.log(publicId);
           const photoIndex = event.photos.find(
             (photo) => photo.public_id === publicId
           );

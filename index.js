@@ -27,7 +27,7 @@ app.post("/api/generate-api-key", generateAPIKey);
 
 // Routes
 app.use("/api/v1/auth",validateApiKey, authRoutes);
-app.use("/api/v1/event", validateApiKey,eventRoutes);
+app.use("/api/v1/event",eventRoutes);
 app.use("/api/v1/updates", validateApiKey, updatesRoutes);
 
 app.get("/health", (req, res) => {

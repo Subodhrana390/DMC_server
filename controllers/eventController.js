@@ -123,7 +123,9 @@ const getEvents = async (req, res) => {
 // READ EVENTS
 const getFeaturedEvent = async (req, res) => {
   try {
-    const events = await Event.find({ featured: true });
+    const events = await Event.find({ featured: req.query.featured }).populate(
+      "creator"
+    );
 
     if (!events || events.length === 0) {
       return res.status(404).json({ message: "No featured events found." });
@@ -142,9 +144,6 @@ const getFeaturedEvent = async (req, res) => {
     res.status(500).json({ message: "An unexpected error occurred." });
   }
 };
-
-
-
 
 // READ EVENT BY ID
 export const getEventById = async (req, res) => {

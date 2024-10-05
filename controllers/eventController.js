@@ -29,9 +29,8 @@ const createEvent = async (req, res) => {
     return res.status(400).json({ success: false, errors: errors.array() });
   }
 
-  
   const { flyer, photos } = req.files || {};
-  console.log(photos)
+  console.log(photos);
   if (!flyer || flyer.length === 0 || !photos || photos.length === 0) {
     return res
       .status(400)
@@ -115,6 +114,16 @@ const createEvent = async (req, res) => {
 const getEvents = async (req, res) => {
   try {
     const events = await Event.find().populate("creator");
+    res.status(200).json(events);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// READ EVENTS
+const getFeaturedEvent = async (req, res) => {
+  try {
+    const events = await Event.find({ featured: true }).populate("creator");
     res.status(200).json(events);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -328,6 +337,7 @@ export default {
   getEventById,
   updateEvent,
   deleteEvent,
+  getFeaturedEvent,
   featuredUpdate,
-  disableFeatured
+  disableFeatured,
 };

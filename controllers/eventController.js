@@ -2,6 +2,7 @@ import { validationResult } from "express-validator";
 import { cloudinary } from "../middlewares/Cloudinary.js";
 import fs from "fs";
 import Event from "../models/Event.js";
+import { query } from "express";
 
 // CREATE EVENT
 const uploadToCloudinary = async (filePath, folder) => {
@@ -112,8 +113,10 @@ const createEvent = async (req, res) => {
 
 // READ EVENTS
 const getEvents = async (req, res) => {
+  const query = {};
+  if (req.query.featured) query.featured = req.query.featured;
   try {
-    const events = await Event.find().populate("creator");
+    const events = await Event.find(query).populate("creator");
     res.status(200).json(events);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -123,9 +126,7 @@ const getEvents = async (req, res) => {
 // READ EVENTS
 const getFeaturedEvent = async (req, res) => {
   try {
-    const events = await Event.find({ featured: req.query.featured }).populate(
-      "creator"
-    );
+    const events = await Event.find();
 
     if (!events || events.length === 0) {
       return res.status(404).json({ message: "No featured events found." });

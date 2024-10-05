@@ -36,6 +36,10 @@ const updateSchema = new mongoose.Schema(
       enum: ["Active", "Inactive"],
       default: "Active",
     },
+    isNew: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,

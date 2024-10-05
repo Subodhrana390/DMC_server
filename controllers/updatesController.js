@@ -21,6 +21,7 @@ const createUpdate = async (req, res) => {
       description,
       type,
       link,
+      isNew:true,
       creator: req.userId, // Add the creator's ID from the authenticated user
     });
 

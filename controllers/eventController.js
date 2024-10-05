@@ -116,7 +116,7 @@ const getEvents = async (req, res) => {
   const query = {};
   if (req.query.featured) query.featured = req.query.featured;
   try {
-    const events = await Event.find(query).populate("creator");
+    const events = await Event.find(query).sort({ _id: -1 }).populate("creator");
     res.status(200).json(events);
   } catch (error) {
     res.status(500).json({ message: error.message });

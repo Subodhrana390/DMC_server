@@ -134,15 +134,6 @@ const updateStatus = async (req, res) => {
   const { id } = req.params;
   const { title, description, type } = req.body;
 
-  // Validate required fields
-  if (!title || !description || !type) {
-    return res.status(400).json({
-      success: false,
-      message: "Validation Error: Title, description, and type are required.",
-      update: null,
-    });
-  }
-
   try {
     const updatedUpdate = await Updates.findOneAndUpdate(
       { _id: id, creator: req.userId },

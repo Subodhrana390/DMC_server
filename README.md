@@ -91,15 +91,22 @@ API Endpoints
 Authentication
 POST /api/auth/register - Register a new user
 POST /api/auth/login - Login with email and password
+PUT /api/auth/:id - Update a user
+GET /api/auth/:id - get a user by Id
+GET /api/auth/ - Get all user
+DEL /api/auth/:id - Delete user
 Events
 GET /api/events - Get all events
 POST /api/events - Create a new event
 GET /api/events/:id - Get a specific event by ID
 PUT /api/events/:id - Update an event by ID
 DELETE /api/events/:id - Delete an event by ID
-Members
-GET /api/members - Get all members
-POST /api/members - Create a new member
-GET /api/members/:id - Get a specific member by ID
-PUT /api/members/:id - Update a member by ID
-DELETE /api/members/:id - Delete a member by ID
+
+Updates
+GET /api/updates - Get all updates
+POST /api/updates - Create a new updates
+POST /api/updates/user - get update by creator
+POST /api/updates/public - get updates by guest
+GET /api/updates/:id - Get a specific updates by ID
+PUT /api/updates/:id - Update a updates by ID
+DELETE /api/updates/:id - Delete a updates by ID

@@ -29,7 +29,9 @@ const createEvent = async (req, res) => {
     return res.status(400).json({ success: false, errors: errors.array() });
   }
 
+  
   const { flyer, photos } = req.files || {};
+  console.log(photos)
   if (!flyer || flyer.length === 0 || !photos || photos.length === 0) {
     return res
       .status(400)
@@ -92,6 +94,7 @@ const createEvent = async (req, res) => {
         folder: flyerUpload.folder,
         original_filename: flyerUpload.original_filename,
       },
+      featured: false,
     });
 
     await event.save();
@@ -141,20 +144,27 @@ const updateEvent = async (req, res) => {
 
     const event = await Event.findById(req.params.id);
     if (!event) {
-      return res.status(404).json({ success: false, message: "Event not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Event not found" });
     }
 
     if (req.files?.flyer) {
-      const flyerUpload = await cloudinary.uploader.upload(req.files.flyer[0].path, { folder: "flyers" });
-      event.flyer = flyerUpload;  // Updated flyer information
+      const flyerUpload = await cloudinary.uploader.upload(
+        req.files.flyer[0].path,
+        { folder: "flyers" }
+      );
+      event.flyer = flyerUpload; // Updated flyer information
     }
 
     if (req.files?.photos) {
       const newPhotos = await Promise.all(
-        req.files.photos.map(file => cloudinary.uploader.upload(file.path, { folder: "photos" }))
+        req.files.photos.map((file) =>
+          cloudinary.uploader.upload(file.path, { folder: "photos" })
+        )
       );
 
-      const formattedPhotos = newPhotos.map(photo => ({
+      const formattedPhotos = newPhotos.map((photo) => ({
         asset_id: photo.asset_id,
         public_id: photo.public_id,
         version: photo.version,
@@ -174,23 +184,29 @@ const updateEvent = async (req, res) => {
         folder: photo.folder,
         original_filename: photo.original_filename,
       }));
-      event.photos.push(...formattedPhotos);  // Add new photos
+      event.photos.push(...formattedPhotos); // Add new photos
     }
 
     if (req.body.public_ids) {
-      const publicIdsToDelete = Array.isArray(req.body.public_ids) ? req.body.public_ids : [req.body.public_ids];
+      const publicIdsToDelete = Array.isArray(req.body.public_ids)
+        ? req.body.public_ids
+        : [req.body.public_ids];
 
       await Promise.all(
-        publicIdsToDelete.map(async publicId => {
-          console.log(publicId)
-          const photoIndex = event.photos.find(photo => photo.public_id === publicId);
-          console.log(photoIndex)
+        publicIdsToDelete.map(async (publicId) => {
+          console.log(publicId);
+          const photoIndex = event.photos.find(
+            (photo) => photo.public_id === publicId
+          );
+          console.log(photoIndex);
           if (photoIndex !== -1) {
             const result = await cloudinary.uploader.destroy(publicId);
             if (result.result === "ok") {
-              event.photos.splice(photoIndex, 1);  // Remove deleted photo from event
+              event.photos.splice(photoIndex, 1); // Remove deleted photo from event
             } else {
-              console.error(`Failed to delete photo from Cloudinary: ${publicId}`);
+              console.error(
+                `Failed to delete photo from Cloudinary: ${publicId}`
+              );
             }
           } else {
             console.error(`Photo not found in MongoDB: ${publicId}`);
@@ -199,16 +215,17 @@ const updateEvent = async (req, res) => {
       );
     }
 
-    Object.assign(event, req.body);  // Update event details
-    await event.save();  // Save changes
+    Object.assign(event, req.body); // Update event details
+    await event.save(); // Save changes
 
     return res.status(200).json({ success: true, event });
   } catch (error) {
     console.error("Error updating event:", error);
-    return res.status(500).json({ success: false, message: "Event update failed." });
+    return res
+      .status(500)
+      .json({ success: false, message: "Event update failed." });
   }
 };
-
 
 // DELETE EVENT
 const deleteEvent = async (req, res) => {
@@ -236,10 +253,81 @@ const deleteEvent = async (req, res) => {
   }
 };
 
+const featuredUpdate = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const EventUpdate = await Event.findOneAndUpdate(
+      { _id: id, creator: req.userId },
+      { featured: true },
+      { new: true, runValidators: true }
+    );
+
+    if (!EventUpdate) {
+      return res.status(404).json({
+        success: false,
+        message: "Update not found or you are not authorized to disable this.",
+        update: null,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Event featured successfully.",
+      event: EventUpdate,
+    });
+  } catch (err) {
+    console.error("Error disabling update with ID:", id, "Error:", err);
+    return res.status(500).json({
+      success: false,
+      message:
+        "Internal Server Error: Failed to disable update. Please try again later.",
+      error: err.message,
+      update: null,
+    });
+  }
+};
+const disableFeatured = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const EventUpdate = await Event.findOneAndUpdate(
+      { _id: id, creator: req.userId },
+      { featured: false },
+      { new: true, runValidators: true }
+    );
+
+    if (!EventUpdate) {
+      return res.status(404).json({
+        success: false,
+        message: "Update not found or you are not authorized to disable this.",
+        update: null,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Event featured disbaled successfully.",
+      event: EventUpdate,
+    });
+  } catch (err) {
+    console.error("Error disabling update with ID:", id, "Error:", err);
+    return res.status(500).json({
+      success: false,
+      message:
+        "Internal Server Error: Failed to disable update. Please try again later.",
+      error: err.message,
+      update: null,
+    });
+  }
+};
+
 export default {
   createEvent,
   getEvents,
   getEventById,
   updateEvent,
   deleteEvent,
+  featuredUpdate,
+  disableFeatured
 };

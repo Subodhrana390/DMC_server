@@ -8,7 +8,9 @@ const router = express.Router();
 router.post("/",verifyToken ,controller.createUpdate);
 
 // Route to retrieve all active updates created by the current user
-router.get("/", controller.getUpdates);
+router.get("/user",verifyToken, controller.getUpdates);
+// Route to retrieve all active updates 
+router.get("/public", controller.getPublicUpdates);
 
 // Route to retrieve a specific update by its ID
 router.get("/:id",verifyToken, controller.getUpdatesByUserId);
@@ -20,6 +22,6 @@ router.patch("/:id",verifyToken, controller.updateStatus);
 router.delete("/:id", verifyToken,controller.deleteUpdate);
 
 // Route to disable (set to Inactive) an existing update
-router.patch("/:id/disable", controller.disableUpdate);
+router.patch("/:id/disable",verifyToken, controller.disableUpdate);
 
 export default router;

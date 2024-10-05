@@ -7,7 +7,7 @@ const createUpdate = async (req, res) => {
   const { title, description, type, link } = req.body;
 
   // Validate required fields
-  if (!title || !description || !type || !link) {
+  if (!title || !description || !type) {
     return res.status(400).json({
       success: false,
       message: "Validation Error: All fields (title, description, type, link) are required.",

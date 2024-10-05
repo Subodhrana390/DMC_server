@@ -4,7 +4,7 @@ const updateSchema = new mongoose.Schema(
   {
     creator: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", 
+      ref: "User",
       required: true,
     },
     title: {
@@ -17,18 +17,15 @@ const updateSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-  
+
     link: {
       type: String,
-      required: true,
       trim: true,
     },
-  
     date: {
       type: Date,
       default: Date.now,
     },
-
     type: {
       type: String,
       enum: ["Announcement", "New Feature", "Event", "Other"],

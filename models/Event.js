@@ -58,6 +58,7 @@ const EventSchema = new mongoose.Schema(
       folder: { type: String, default: "" },
       original_filename: { type: String, required: true },
     },
+    featured: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

@@ -123,12 +123,28 @@ const getEvents = async (req, res) => {
 // READ EVENTS
 const getFeaturedEvent = async (req, res) => {
   try {
-    const events = await Event.find({ featured: true }).populate("creator");
+    const events = await Event.find({ featured: true });
+
+    if (!events || events.length === 0) {
+      return res.status(404).json({ message: "No featured events found." });
+    }
+
     res.status(200).json(events);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error fetching featured events:", error);
+
+    if (error.name === "MongoNetworkError") {
+      return res.status(503).json({ message: "Database connection error." });
+    } else if (error.name === "CastError") {
+      return res.status(400).json({ message: "Invalid query." });
+    }
+
+    res.status(500).json({ message: "An unexpected error occurred." });
   }
 };
+
+
+
 
 // READ EVENT BY ID
 export const getEventById = async (req, res) => {

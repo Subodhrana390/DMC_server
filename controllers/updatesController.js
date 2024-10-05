@@ -21,7 +21,7 @@ const createUpdate = async (req, res) => {
       description,
       type,
       link,
-      isNew:true,
+      isNew: true,
       creator: req.userId, // Add the creator's ID from the authenticated user
     });
 
@@ -132,12 +132,11 @@ const getUpdatesByUserId = async (req, res) => {
  */
 const updateStatus = async (req, res) => {
   const { id } = req.params;
-  const { title, description, type } = req.body;
 
   try {
     const updatedUpdate = await Updates.findOneAndUpdate(
       { _id: id, creator: req.userId },
-      { title, description, type },
+      req.body,
       { new: true, runValidators: true }
     );
 
